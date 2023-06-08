@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 600px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div>
+      <label for="employeeId">Employee ID:</label>
+      <input type="number" id="employeeId" />
+      <label for="latitude">Latitude:</label>
+      <input type="text" id="latitude" />
+      <label for="longitude">Longitude:</label>
+      <input type="text" id="longitude" />
+      <button onclick="updateEmployeeCoordinates()">Update Coordinates</button>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/leaflet.markercluster.js"></script>
+    <script>
+       const employees = [
+  {
+    id: 1,
+    name: 'John Doe',
+    dept: 'HR',
+    address: '123 Main St, Anytown, USA',
+    coordinates: [40.7128, -74.0060]
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    dept: 'Sales',
+    address: '456 Elm St, Otherville, USA',
+    coordinates: [39.9526, -75.1652]
+  },
+  {
+    id: 3,
+    name: 'David Johnson',
+    dept: 'Marketing',
+    address: '789 Oak Ave, Another City, USA',
+    coordinates: [37.7749, -122.4194]
+  },
+  {
+    id: 4,
+    name: 'Amit Patel',
+    dept: 'Finance',
+    address: '321 Pine Road, Mumbai, India',
+    coordinates: [19.0760, 72.8777]
+  },
+  {
+    id: 5,
+    name: 'Emma Wilson',
+    dept: 'Operations',
+    address: '789 Broadway, Sydney, Australia',
+    coordinates: [-33.8651, 151.2099]
+  },
+  {
+    id: 6,
+    name: 'Marta Fernandez',
+    dept: 'Engineering',
+    address: '456 Rue de la Revolution, Paris, France',
+    coordinates: [48.8566, 2.3522]
+  },
+  {
+    id: 7,
+    name: 'James Johnson',
+    dept: 'Finance',
+    address: '987 High St, Another City, USA',
+    coordinates: [38.9072, -77.0369]
+  },
+  {
+    id: 8,
+    name: 'Priya Kapoor',
+    dept: 'Sales',
+    address: '321 Elm St, Delhi, India',
+    coordinates: [28.6139, 77.2090]
+  },
+  {
+    id: 9,
+    name: 'Maxwell Chen',
+    dept: 'Marketing',
+    address: '456 Park Ave, Melbourne, Australia',
+    coordinates: [-37.8136, 144.9631]
+  },
+  {
+    id: 10,
+    name: 'Sophia Müller',
+    dept: 'Engineering',
+    address: '789 Alexanderplatz, Berlin, Germany',
+    coordinates: [52.5200, 13.4050]
+  },
+  {
+    id: 11,
+    name: 'Daniel Lee',
+    dept: 'Operations',
+    address: '987 Orchard Rd, Singapore',
+    coordinates: [1.3521, 103.8198]
+  },
+  {
+    id: 12,
+    name: 'Luisa Rossi',
+    dept: 'Sales',
+    address: '654 Via Roma, Rome, Italy',
+    coordinates: [41.9028, 12.4964]
+  },
+  {
+    id: 13,
+    name: 'Ryan Johnson',
+    dept: 'Engineering',
+    address: '321 Broadway, New York, USA',
+    coordinates: [40.7128, -74.0060]
+  },
+  {
+    id: 14,
+    name: 'Priyanka Gupta',
+    dept: 'Finance',
+    address: '456 Park St, Delhi, India',
+    coordinates: [28.6139, 77.2090]
+  },
+  {
+    id: 15,
+    name: 'Oliver Wilson',
+    dept: 'Marketing',
+    address: '789 Bay St, Sydney, Australia',
+    coordinates: [-33.8651, 151.2099]
+  },
+  {
+    id: 16,
+    name: 'Elena Rodriguez',
+    dept: 'Operations',
+    address: '654 Carrer de Valencia, Barcelona, Spain',
+    coordinates: [41.3851, 2.1734]
+  },
+  {
+    id: 17,
+    name: 'Robert Johnson',
+    dept: 'Sales',
+    address: '987 Lincoln Ave, Chicago, USA',
+    coordinates: [41.8781, -87.6298]
+  },
+  {
+    id: 18,
+    name: 'Kunal Sharma',
+    dept: 'Engineering',
+    address: '321 Park Rd, Bangalore, India',
+    coordinates: [12.9716, 77.5946]
+  },
+  {
+    id: 19,
+    name: 'Sophie Brown',
+    dept: 'Finance',
+    address: '456 George St, Sydney, Australia',
+    coordinates: [-33.8651, 151.2099]
+  },
+  {
+    id: 20,
+    name: 'Antonio Rossi',
+    dept: 'Marketing',
+    address: '789 Piazza di Spagna, Rome, Italy',
+    coordinates: [41.9028, 12.4964]
+  },
+  {
+    id: 21,
+    name: 'Emily Wilson',
+    dept: 'HR',
+    address: '123 Elm St, Anytown, USA',
+    coordinates: [40.7128, -74.0060]
+  },
+  {
+    id: 22,
+    name: 'Rahul Verma',
+    dept: 'Sales',
+    address: '456 Main Rd, Delhi, India',
+    coordinates: [28.6139, 77.2090]
+  },
+  {
+    id: 23,
+    name: 'Liam Smith',
+    dept: 'Engineering',
+    address: '789 Park Blvd, Melbourne, Australia',
+    coordinates: [-37.8136, 144.9631]
+  },
+  {
+    id: 24,
+    name: 'Laura Müller',
+    dept: 'Operations',
+    address: '321 Brandenburger Tor, Berlin, Germany',
+    coordinates: [52.5200, 13.4050]
+  },
+  {
+    id: 25,
+    name: 'Andrew Thompson',
+    dept: 'Finance',
+    address: '987 King St, Another City, USA',
+    coordinates: [38.9072, -77.0369]
+  },
+  {
+    id: 26,
+    name: 'Riya Kapoor',
+    dept: 'Sales',
+    address: '123 Elm St, Mumbai, India',
+    coordinates: [19.0760, 72.8777]
+  },
+  {
+    id: 27,
+    name: 'Michael Wilson',
+    dept: 'Marketing',
+    address: '456 George St, Sydney, Australia',
+    coordinates: [-33.8651, 151.2099]
+  },
+  {
+    id: 28,
+    name: 'Isabella Rossi',
+    dept: 'Engineering',
+    address: '789 Via Condotti, Rome, Italy',
+    coordinates: [41.9028, 12.4964]
+  },
+  {
+    id: 29,
+    name: 'Jacob Johnson',
+    dept: 'Operations',
+    address: '987 Broadway, New York, USA',
+    coordinates: [40.7128, -74.0060]
+  },
+  {
+    id: 30,
+    name: 'Rajesh Patel',
+    dept: 'Finance',
+    address: '321 Park St, Delhi, India',
+    coordinates: [28.6139, 77.2090]
+  },
+  {
+    id: 31,
+    name: 'Sophia Wilson',
+    dept: 'Sales',
+    address: '456 Queen St, Sydney, Australia',
+    coordinates: [-33.8651, 151.2099]
+  },
+  {
+    id: 32,
+    name: 'Gabriel Müller',
+    dept: 'Marketing',
+    address: '789 Piazza Navona, Rome, Italy',
+    coordinates: [41.9028, 12.4964]
+  },
+  {
+    id: 33,
+    name: 'William Davis',
+    dept: 'HR',
+    address: '123 Oak St, Anytown, USA',
+    coordinates: [40.7128, -74.0060]
+  },
+  {
+    id: 34,
+    name: 'Anika Gupta',
+    dept: 'Sales',
+    address: '456 Park Rd, Delhi, India',
+    coordinates: [28.6139, 77.2090]
+  },
+  {
+    id: 35,
+    name: 'Ethan Wilson',
+    dept: 'Engineering',
+    address: '789 Beach Rd, Melbourne, Australia',
+    coordinates: [-37.8136, 144.9631]
+  },
+  {
+    id: 36,
+    name: 'Sofia Müller',
+    dept: 'Operations',
+    address: '321 Alexanderplatz, Berlin, Germany',
+    coordinates: [52.5200, 13.4050]
+  },
+  {
+    id: 37,
+    name: 'Emma Johnson',
+    dept: 'Finance',
+    address: '987 Jefferson St, Another City, USA',
+    coordinates: [38.9072, -77.0369]
+  },
+  {
+    id: 38,
+    name: 'Rohit Kapoor',
+    dept: 'Sales',
+    address: '123 Main Rd, Mumbai, India',
+    coordinates: [19.0760, 72.8777]
+  },
+  {
+    id: 39,
+    name: 'Liam Wilson',
+    dept: 'Marketing',
+    address: '456 George St, Sydney, Australia',
+    coordinates: [-33.8651, 151.2099]
+  },
+  {
+    id: 40,
+    name: 'Giulia Rossi',
+    dept: 'Engineering',
+    address: '789 Colosseum, Rome, Italy',
+    coordinates: [41.9028, 12.4964]
+  },
+  {
+    id: 41,
+    name: 'Mia Thompson',
+    dept: 'Operations',
+    address: '987 Broadway, New York, USA',
+    coordinates: [40.7128, -74.0060]
+  },
+  {
+    id: 42,
+    name: 'Arjun Verma',
+    dept: 'Finance',
+    address: '321 Park St, Delhi, India',
+    coordinates: [28.6139, 77.2090]
+  },
+  {
+    id: 43,
+    name: 'Noah Smith',
+    dept: 'Sales',
+    address: '456 Queen St, Sydney, Australia',
+    coordinates: [-33.8651, 151.2099]
+  },
+  {
+    id: 44,
+    name: 'Chiara Rossi',
+    dept: 'Marketing',
+    address: '789 Trevi Fountain, Rome, Italy',
+    coordinates: [41.9028, 12.4964]
+  },
+  {
+    id: 45,
+    name: 'Emily Davis',
+    dept: 'HR',
+    address: '123 Maple St, Anytown, USA',
+    coordinates: [40.7128, -74.0060]
+  },
+  {
+    id: 46,
+    name: 'Vikram Patel',
+    dept: 'Sales',
+    address: '456 Elm St, Delhi, India',
+    coordinates: [28.6139, 77.2090]
+  },
+  {
+    id: 47,
+    name: 'Sebastian Wilson',
+    dept: 'Engineering',
+    address: '789 Park Blvd, Melbourne, Australia',
+    coordinates: [-37.8136, 144.9631]
+  },
+  {
+    id: 48,
+    name: 'Aurora Müller',
+    dept: 'Operations',
+    address: '321 Unter den Linden, Berlin, Germany',
+    coordinates: [52.5200, 13.4050]
+  },
+  {
+    id: 49,
+    name: 'Olivia Johnson',
+    dept: 'Finance',
+    address: '987 High St, Another City, USA',
+    coordinates: [38.9072, -77.0369]
+  },
+  {
+    id: 50,
+    name: 'Rohan Kapoor',
+    dept: 'Sales',
+    address: '123 Main Rd, Mumbai, India',
+    coordinates: [19.0760, 72.8777]
+  }
+];
+
+console.log(employees);
+
+      const getEmployees = () => employees;
+      const updateEmployeeLocation = (id, address, coordinates) => {
+        const employee = employees.find(emp => emp.id === id);
+        if (employee) {
+          employee.address = address;
+          employee.coordinates = coordinates;
+         
+          const marker = markers.find(marker => marker.options.employeeId === id);
+          if (marker) {
+            marker.setLatLng(coordinates);
+            marker.getPopup().setContent(generatePopupContent(employee));
+          }
+        }
+      };
+
+      const map = L.map('map').setView([40, -74], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+      const markers = employees.map(employee => {
+        const marker = L.marker(employee.coordinates, { employeeId: employee.id });
+        marker.bindPopup(generatePopupContent(employee));
+        return marker;
+      });
+
+      const markerClusterGroup = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true
+      });
+      markerClusterGroup.addLayers(markers);
+      map.addLayer(markerClusterGroup);
+
+      function showEmployeeDetails(employeeId) {
+        const employee = employees.find(emp => emp.id === employeeId);
+        if (employee) {
+          alert(`Employee ID: ${employee.id}\nName: ${employee.name}\nDepartment: ${employee.dept}\nAddress: ${employee.address}\nCoordinates: ${employee.coordinates[0]}, ${employee.coordinates[1]}`);
+        }
+      }
+
+      function generatePopupContent(employee) {
+        return `<a href="#" onclick="showEmployeeDetails(${employee.id})">${employee.name}</a><br>Employee ID: ${employee.id}<br>Department: ${employee.dept}<br>Address: ${employee.address}<br>Coordinates: ${employee.coordinates[0]}, ${employee.coordinates[1]}`;
+      }
+
+      function updateEmployeeCoordinates() {
+        const employeeIdInput = document.getElementById('employeeId');
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+        const employeeId = parseInt(employeeIdInput.value);
+        const employee = employees.find(emp => emp.id === employeeId);
+        if (employee && !isNaN(latitudeInput.value) && !isNaN(longitudeInput.value)) {
+          const newCoordinates = [parseFloat(latitudeInput.value), parseFloat(longitudeInput.value)];
+          updateEmployeeLocation(employeeId, employee.address, newCoordinates);
+          latitudeInput.value = '';
+          longitudeInput.value = '';
+        } else {
+          alert('Invalid Employee ID or coordinates entered. Please try again.');
+        }
+      }
+    </script>
+  </body>
+</html>
